@@ -1,5 +1,9 @@
 import { App } from "aws-cdk-lib";
 import HealthioDataStack from "./HealthioDataStack";
+import HealthioSyncStack from "./HealthioSyncStack";
 
 const app = new App();
-new HealthioDataStack(app, "HealthioDataStack");
+const dataStack = new HealthioDataStack(app, "HealthioDataStack");
+new HealthioSyncStack(app, "HealthioSyncStack", {
+  dataBucket: dataStack.sourceDataBucket,
+});

@@ -1,7 +1,7 @@
 {
-  "name": "@mattb.tech/healthio-cdk",
+  "name": "@mattb.tech/healthio-sync-lambda",
   "version": "1.0.0",
-  "description": "CDK for healthio",
+  "description": "Lambda to sync apple health data to S3",
   "main": "dist/index.js",
   "author": "Matt Benton <m@mattb.tech>",
   "license": "MIT",
@@ -11,17 +11,11 @@
     "clean": "../../scripts/clean.sh",
     "fix": "../../scripts/fix.sh",
     "check": "../../scripts/check.sh",
-    "watch": "../../scripts/watch.sh",
-    "deploy": "yarn build && cdk deploy --profile mattb.tech-deploy --require-approval never --all"
+    "watch": "../../scripts/watch.sh"
   },
-  "dependencies": {
-    "aws-cdk": "^2.59.0",
-    "aws-cdk-lib": "^2.59.0",
-    "constructs": "^10.1.209"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^18.11.18",
-    "esbuild": "^0.16.13",
+    "@types/aws-lambda": "^8.10.109",
     "prettier": "^2.8.1",
     "typescript": "^4.9.4"
   }

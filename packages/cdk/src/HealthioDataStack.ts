@@ -3,10 +3,10 @@ import { Construct } from "constructs";
 import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
 
 export default class HealthioDataStack extends Stack {
-  public readonly sourceDataStore: IBucket;
+  public readonly sourceDataBucket: IBucket;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this.sourceDataStore = new Bucket(this, "SourceDataStore");
+    this.sourceDataBucket = new Bucket(this, "SourceDataBucket");
   }
 }
