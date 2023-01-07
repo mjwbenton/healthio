@@ -9,7 +9,7 @@ const { DATA_BUCKET } = cleanEnv(process.env, {
 const S3 = new S3Client({});
 
 export async function handler(event: APIGatewayEvent) {
-  const Key = new Date().toISOString();
+  const Key = `${new Date().toISOString()}.json`;
   const Body = event.body;
   if (!Body) {
     throw new Error("Missing request body");
