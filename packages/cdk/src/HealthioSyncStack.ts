@@ -30,6 +30,8 @@ export default class HealthioSyncStack extends Stack {
     });
     const url = lambda.addFunctionUrl({ authType: FunctionUrlAuthType.NONE });
 
+    dataBucket.grantWrite(lambda);
+
     new CfnOutput(this, "LambdaUrl", {
       value: url.url,
     });
