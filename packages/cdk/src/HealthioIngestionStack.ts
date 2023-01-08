@@ -1,11 +1,15 @@
-import { Duration, Stack } from "aws-cdk-lib";
+import { CfnOutput, Duration, Stack } from "aws-cdk-lib";
 import {
   AttributeType,
   BillingMode,
   ITable,
   Table,
 } from "aws-cdk-lib/aws-dynamodb";
-import { IFunction, Runtime } from "aws-cdk-lib/aws-lambda";
+import {
+  FunctionUrlAuthType,
+  IFunction,
+  Runtime,
+} from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import path from "path";
@@ -35,6 +39,14 @@ export default class HealthioIngestionStack extends Stack {
       timeout: Duration.minutes(1),
       runtime: Runtime.NODEJS_18_X,
       memorySize: 1024,
+    });
+
+    const url = this.ingestionFunction.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
+    });
+
+    new CfnOutput(this, "IngestionFunctionUrl", {
+      value: url.url,
     });
   }
 }
