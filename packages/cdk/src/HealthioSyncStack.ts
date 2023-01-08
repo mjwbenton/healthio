@@ -37,6 +37,7 @@ export default class HealthioSyncStack extends Stack {
           NODE_ENV: "production",
         },
       },
+      timeout: Duration.minutes(1),
       runtime: Runtime.NODEJS_18_X,
       memorySize: 1024,
       environment: {
