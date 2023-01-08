@@ -11,8 +11,6 @@ import {
   CachePolicy,
   Distribution,
   OriginProtocolPolicy,
-  OriginRequestPolicy,
-  OriginSslPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
 import { HttpOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
