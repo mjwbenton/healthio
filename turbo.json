@@ -18,7 +18,8 @@
     "@mattb.tech/healthio-cdk#deploy": {
       "dependsOn": [
         "@mattb.tech/healthio-sync-lambda#build",
-        "@mattb.tech/healthio-ingestion-lambda#build"
+        "@mattb.tech/healthio-ingestion-lambda#build",
+        "@mattb.tech/healthio-graphql-lambda#build"
       ]
     }
   }
