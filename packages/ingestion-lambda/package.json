@@ -15,10 +15,14 @@
     "generate-source-data-type": "quicktype -o src/SourceData.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.245.0"
+    "@aws-sdk/client-dynamodb": "^3.245.0",
+    "@aws-sdk/client-s3": "^3.245.0",
+    "envalid": "^7.3.1",
+    "lodash.chunk": "^4.2.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.109",
+    "@types/lodash.chunk": "^4.2.7",
     "prettier": "^2.8.1",
     "quicktype": "^18.0.1",
     "typescript": "^4.9.4"
