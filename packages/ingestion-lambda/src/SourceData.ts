@@ -23,9 +23,12 @@ export interface Metric {
 }
 
 export interface Datum {
-    qty:    number;
-    source: null;
-    date:   string;
+    qty?:    number;
+    source?: null;
+    date:    string;
+    Avg?:    number;
+    Min?:    number;
+    Max?:    number;
 }
 
 export interface Workout {
@@ -271,9 +274,12 @@ const typeMap: any = {
         { json: "name", js: "name", typ: "" },
     ], false),
     "Datum": o([
-        { json: "qty", js: "qty", typ: 3.14 },
-        { json: "source", js: "source", typ: null },
+        { json: "qty", js: "qty", typ: u(undefined, 3.14) },
+        { json: "source", js: "source", typ: u(undefined, null) },
         { json: "date", js: "date", typ: "" },
+        { json: "Avg", js: "Avg", typ: u(undefined, 3.14) },
+        { json: "Min", js: "Min", typ: u(undefined, 0) },
+        { json: "Max", js: "Max", typ: u(undefined, 0) },
     ], false),
     "Workout": o([
         { json: "avgHeartRate", js: "avgHeartRate", typ: r("ActiveEnergy") },
