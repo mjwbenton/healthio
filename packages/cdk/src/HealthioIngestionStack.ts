@@ -1,5 +1,10 @@
 import { CfnOutput, Duration, Stack } from "aws-cdk-lib";
 import {
+  ComparisonOperator,
+  TreatMissingData,
+} from "aws-cdk-lib/aws-cloudwatch";
+import { SnsAction } from "aws-cdk-lib/aws-cloudwatch-actions";
+import {
   AttributeType,
   BillingMode,
   ITable,
@@ -11,8 +16,11 @@ import {
   Runtime,
 } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { Topic } from "aws-cdk-lib/aws-sns";
 import { Construct } from "constructs";
 import path from "path";
+
+const ALARM_TOPIC = "arn:aws:sns:us-east-1:858777967843:general-alarms";
 
 export default class HealthioIngestionStack extends Stack {
   public readonly dataTable: ITable;
@@ -40,6 +48,34 @@ export default class HealthioIngestionStack extends Stack {
       runtime: Runtime.NODEJS_18_X,
       memorySize: 1024,
     });
+
+    const alarmAction = new SnsAction(
+      Topic.fromTopicArn(this, "AlarmTopic", ALARM_TOPIC)
+    );
+
+    this.ingestionFunction
+      .metricInvocations({
+        period: Duration.days(1),
+        statistic: "Sum",
+      })
+      .createAlarm(this, "RunningAlarm", {
+        threshold: 1,
+        comparisonOperator: ComparisonOperator.LESS_THAN_THRESHOLD,
+        evaluationPeriods: 1,
+        treatMissingData: TreatMissingData.BREACHING,
+      })
+      .addAlarmAction(alarmAction);
+
+    this.ingestionFunction
+      .metricErrors()
+      .createAlarm(this, "ErrorsAlarm", {
+        threshold: 1,
+        comparisonOperator:
+          ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+        evaluationPeriods: 1,
+        treatMissingData: TreatMissingData.NOT_BREACHING,
+      })
+      .addAlarmAction(alarmAction);
 
     const url = this.ingestionFunction.addFunctionUrl({
       authType: FunctionUrlAuthType.NONE,
