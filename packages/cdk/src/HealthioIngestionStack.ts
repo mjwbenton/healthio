@@ -47,7 +47,12 @@ export default class HealthioIngestionStack extends Stack {
       timeout: Duration.minutes(1),
       runtime: Runtime.NODEJS_18_X,
       memorySize: 1024,
+      environment: {
+        DATA_TABLE: this.dataTable.tableName,
+      },
     });
+
+    this.dataTable.grantReadWriteData(this.ingestionFunction);
 
     const alarmAction = new SnsAction(
       Topic.fromTopicArn(this, "AlarmTopic", ALARM_TOPIC)
@@ -55,13 +60,13 @@ export default class HealthioIngestionStack extends Stack {
 
     this.ingestionFunction
       .metricInvocations({
-        period: Duration.days(1),
+        period: Duration.hours(6),
         statistic: "Sum",
       })
       .createAlarm(this, "RunningAlarm", {
         threshold: 1,
         comparisonOperator: ComparisonOperator.LESS_THAN_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: 4,
         treatMissingData: TreatMissingData.BREACHING,
       })
       .addAlarmAction(alarmAction);
