@@ -29,7 +29,7 @@ export default class HealthioIngestionStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
     this.dataTable = new Table(this, "DataTable", {
-      partitionKey: { name: "aggregation", type: AttributeType.STRING },
+      partitionKey: { name: "metric", type: AttributeType.STRING },
       sortKey: { name: "date", type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       pointInTimeRecovery: true,
