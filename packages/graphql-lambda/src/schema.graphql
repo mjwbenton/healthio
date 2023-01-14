@@ -1,0 +1,10 @@
+scalar Date
+
+type Query {
+  activity(from: Date!, to: Date!): Activity!
+}
+
+type Activity {
+  swimmingDistance: Int!
+  walkingRunningDistance: Int!
+}

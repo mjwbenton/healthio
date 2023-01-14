@@ -1,15 +1,34 @@
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateLambdaHandler } from "@as-integrations/aws-lambda";
+import { DateResolver } from "graphql-scalars";
+import { readFileSync } from "fs";
+import { QueryActivityArgs, Resolvers } from "./generated/graphql";
+import { getSummedValue } from "./data";
+import { getForwardedArgs, withForwardedArgs } from "./util";
 
-const typeDefs = `#graphql
-  type Query {
-    hello: String
-  }
-`;
+const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8" });
 
-const resolvers = {
+const WALKING_METRIC = "walking_running_distance";
+const SWIMMING_METRIC = "swimming_distance";
+
+const resolvers: Resolvers = {
+  Date: DateResolver,
+  Activity: {
+    swimmingDistance: (parent) => {
+      const { from, to } = getForwardedArgs<QueryActivityArgs>(parent);
+      return getSummedValue(SWIMMING_METRIC, from, to);
+    },
+    walkingRunningDistance: (parent) => {
+      const { from, to } = getForwardedArgs<QueryActivityArgs>(parent);
+      return getSummedValue(WALKING_METRIC, from, to);
+    },
+  },
   Query: {
-    hello: () => "world",
+    // TODO Sort out this ignore
+    //@ts-ignore
+    activity: async (_, args) => {
+      return withForwardedArgs(args, {});
+    },
   },
 };
 

@@ -36,6 +36,15 @@ export default class HealthioGraphqlStack extends Stack {
         environment: {
           NODE_ENV: "production",
         },
+        commandHooks: {
+          beforeBundling: () => [],
+          beforeInstall: () => [],
+          afterBundling: (inputDir: string, outputDir: string): string[] => {
+            return [
+              `cp ${inputDir}/packages/graphql-lambda/src/schema.graphql ${outputDir}`,
+            ];
+          },
+        },
       },
       timeout: Duration.minutes(1),
       runtime: Runtime.NODEJS_18_X,
