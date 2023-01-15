@@ -1,10 +1,15 @@
 scalar Date
 
 type Query {
-  activity(from: Date!, to: Date!): Activity!
+  activity(startDate: Date!, endDate: Date!): Activity!
 }
 
 type Activity {
-  swimmingDistance: Int!
-  walkingRunningDistance: Int!
+  swimmingDistance: Distance!
+  walkingRunningDistance: Distance!
+}
+
+type Distance {
+  m: Int!
+  km: Float!
 }

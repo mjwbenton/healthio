@@ -14,13 +14,23 @@ const SWIMMING_METRIC = "swimming_distance";
 const resolvers: Resolvers = {
   Date: DateResolver,
   Activity: {
-    swimmingDistance: (parent) => {
-      const { from, to } = getForwardedArgs<QueryActivityArgs>(parent);
-      return getSummedValue(SWIMMING_METRIC, from, to);
+    swimmingDistance: async (parent) => {
+      const { startDate, endDate } =
+        getForwardedArgs<QueryActivityArgs>(parent);
+      const m = await getSummedValue(SWIMMING_METRIC, startDate, endDate);
+      return {
+        m,
+        km: m / 1000,
+      };
     },
-    walkingRunningDistance: (parent) => {
-      const { from, to } = getForwardedArgs<QueryActivityArgs>(parent);
-      return getSummedValue(WALKING_METRIC, from, to);
+    walkingRunningDistance: async (parent) => {
+      const { startDate, endDate } =
+        getForwardedArgs<QueryActivityArgs>(parent);
+      const m = await getSummedValue(WALKING_METRIC, startDate, endDate);
+      return {
+        m,
+        km: m / 1000,
+      };
     },
   },
   Query: {
