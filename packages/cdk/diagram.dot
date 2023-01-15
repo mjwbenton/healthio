@@ -1,0 +1,386 @@
+digraph "Diagram" {
+  splines = "ortho";
+  pad = "1.0";
+  nodesep = "0.60";
+  ranksep = "0.75";
+  fontname = "Sans-Serif";
+  fontsize = "15";
+  dpi = "200";
+  rankdir = "BT";
+  compound = "true";
+  fontcolor = "#222222";
+  edge [
+    color = "#D5871488",
+    penwidth = 2,
+    arrowhead = "dot",
+    arrowtail = "dot",
+  ];
+  node [
+    shape = "box",
+    style = "rounded",
+    fixedsize = true,
+    width = 1.7,
+    height = 1.7,
+    labelloc = "c",
+    imagescale = true,
+    fontname = "Sans-Serif",
+    fontsize = 8,
+    margin = 8,
+  ];
+  subgraph "App" {
+    subgraph "cluster-SubGraph.App" {
+      graph [
+        label = "App",
+        labelloc = "b",
+        labeljust = "l",
+        margin = "10",
+        fontsize = "16",
+        penwidth = "2",
+        pencolor = "#888888",
+        style = "filled,rounded",
+        fillcolor = "#f3f3f3",
+      ];
+      subgraph "cluster-SubGraph.HealthioData" {
+        graph [
+          label = "HealthioData",
+          labelloc = "b",
+          labeljust = "l",
+          margin = "10",
+          fontsize = "16",
+          penwidth = "2",
+          pencolor = "#888888",
+          style = "filled,rounded",
+          fillcolor = "#e4e4e4",
+        ];
+        "HealthioData/SourceDataBucket" [
+          label = " SourceDataBucket",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_Amazon-S3-Standard_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioData/NewDataTopic" [
+          label = " NewDataTopic",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_App-Integration/Arch_64/Arch_AWS-Simple-Notification-Service_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioData/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role" [
+          label = " Role",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+      }
+      subgraph "cluster-SubGraph.HealthioSync" {
+        graph [
+          label = "HealthioSync",
+          labelloc = "b",
+          labeljust = "l",
+          margin = "10",
+          fontsize = "16",
+          penwidth = "2",
+          pencolor = "#888888",
+          style = "filled,rounded",
+          fillcolor = "#e4e4e4",
+        ];
+        "HealthioSync/Lambda" [
+          label = " Lambda",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioSync/Distribution" [
+          label = " Distribution",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-CloudFront_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioSync/DomainRecord" [
+          label = " DomainRecord",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Resource/Res_Networking-and-Content-Delivery/Res_48_Dark/Res_Amazon-Route-53-Hosted-Zone_48_Dark_gen.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        subgraph "cluster-SubGraph.Certificate" {
+          graph [
+            label = "Certificate",
+            labelloc = "b",
+            labeljust = "l",
+            margin = "10",
+            fontsize = "16",
+            penwidth = "2",
+            pencolor = "#888888",
+            style = "filled,rounded",
+            fillcolor = "#d6d6d6",
+          ];
+          "HealthioSync/Certificate/CertificateRequestorFunction" [
+            label = "\nCertificateRequestorF",
+            fontsize = 12,
+            image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+            imagescale = "true",
+            imagepos = "tc",
+            penwidth = "0",
+            shape = "node",
+            fixedsize = "true",
+            labelloc = "b",
+            width = 2,
+            height = 2.4819999999999998,
+          ];
+          "HealthioSync/Certificate/CertificateRequestorResource" [
+            label = " CloudFormation\nCustomResource",
+            fontsize = 12,
+            image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_AWS-CloudFormation_64@5x.png",
+            imagescale = "true",
+            imagepos = "tc",
+            penwidth = "0",
+            shape = "node",
+            fixedsize = "true",
+            labelloc = "b",
+            width = 1.2,
+            height = 1.682,
+          ];
+        }
+      }
+      subgraph "cluster-SubGraph.HealthioIngestion" {
+        graph [
+          label = "HealthioIngestion",
+          labelloc = "b",
+          labeljust = "l",
+          margin = "10",
+          fontsize = "16",
+          penwidth = "2",
+          pencolor = "#888888",
+          style = "filled,rounded",
+          fillcolor = "#e4e4e4",
+        ];
+        "HealthioIngestion/DataTable" [
+          label = " DataTable",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Database/64/Arch_Amazon-DynamoDB_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "HealthioIngestion/Lambda" [
+          label = " Lambda",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioIngestion/RunningAlarm" [
+          label = " RunningAlarm",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_Amazon-CloudWatch_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "HealthioIngestion/ErrorsAlarm" [
+          label = " ErrorsAlarm",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_Amazon-CloudWatch_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+      }
+      subgraph "cluster-SubGraph.HealthioGraphql" {
+        graph [
+          label = "HealthioGraphql",
+          labelloc = "b",
+          labeljust = "l",
+          margin = "10",
+          fontsize = "16",
+          penwidth = "2",
+          pencolor = "#888888",
+          style = "filled,rounded",
+          fillcolor = "#e4e4e4",
+        ];
+        "HealthioGraphql/Lambda" [
+          label = " Lambda",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioGraphql/Distribution" [
+          label = " Distribution",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-CloudFront_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "HealthioGraphql/DomainRecord" [
+          label = " DomainRecord",
+          fontsize = 12,
+          image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Resource/Res_Networking-and-Content-Delivery/Res_48_Dark/Res_Amazon-Route-53-Hosted-Zone_48_Dark_gen.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        subgraph "cluster-SubGraph.Certificate" {
+          graph [
+            label = "Certificate",
+            labelloc = "b",
+            labeljust = "l",
+            margin = "10",
+            fontsize = "16",
+            penwidth = "2",
+            pencolor = "#888888",
+            style = "filled,rounded",
+            fillcolor = "#d6d6d6",
+          ];
+          "HealthioGraphql/Certificate/CertificateRequestorFunction" [
+            label = "\nCertificateRequestorF",
+            fontsize = 12,
+            image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+            imagescale = "true",
+            imagepos = "tc",
+            penwidth = "0",
+            shape = "node",
+            fixedsize = "true",
+            labelloc = "b",
+            width = 2,
+            height = 2.4819999999999998,
+          ];
+          "HealthioGraphql/Certificate/CertificateRequestorResource" [
+            label = " CloudFormation\nCustomResource",
+            fontsize = 12,
+            image = "/Users/mattb/workspace/healthio/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_AWS-CloudFormation_64@5x.png",
+            imagescale = "true",
+            imagepos = "tc",
+            penwidth = "0",
+            shape = "node",
+            fixedsize = "true",
+            labelloc = "b",
+            width = 1.2,
+            height = 1.682,
+          ];
+        }
+      }
+    }
+  }
+  "HealthioData/NewDataTopic" -> "HealthioData/SourceDataBucket" [
+    dir = "both",
+  ];
+  "HealthioSync/Lambda" -> "HealthioData/SourceDataBucket" [
+    dir = "both",
+  ];
+  "HealthioSync/Distribution" -> "HealthioSync/Certificate/CertificateRequestorResource" [
+    dir = "both",
+  ];
+  "HealthioSync/Distribution" -> "HealthioSync/Lambda" [
+    dir = "both",
+  ];
+  "HealthioSync/DomainRecord" -> "HealthioSync/Distribution" [
+    dir = "both",
+  ];
+  "HealthioIngestion/Lambda" -> "HealthioData/SourceDataBucket" [
+    dir = "both",
+  ];
+  "HealthioIngestion/Lambda" -> "HealthioIngestion/DataTable" [
+    dir = "both",
+  ];
+  "HealthioIngestion/Lambda" -> "HealthioData/NewDataTopic" [
+    dir = "both",
+  ];
+  "HealthioIngestion/RunningAlarm" -> "HealthioIngestion/Lambda" [
+    dir = "both",
+  ];
+  "HealthioIngestion/ErrorsAlarm" -> "HealthioIngestion/Lambda" [
+    dir = "both",
+  ];
+  "HealthioGraphql/Lambda" -> "HealthioIngestion/DataTable" [
+    dir = "both",
+  ];
+  "HealthioGraphql/Distribution" -> "HealthioGraphql/Certificate/CertificateRequestorResource" [
+    dir = "both",
+  ];
+  "HealthioGraphql/Distribution" -> "HealthioGraphql/Lambda" [
+    dir = "both",
+  ];
+  "HealthioGraphql/DomainRecord" -> "HealthioGraphql/Distribution" [
+    dir = "both",
+  ];
+}
