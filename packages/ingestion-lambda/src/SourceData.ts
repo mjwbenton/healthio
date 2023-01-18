@@ -17,48 +17,77 @@ export interface Data {
 }
 
 export interface Metric {
-    units: string;
-    data:  Datum[];
     name:  string;
+    units: MetricUnits;
+    data:  Datum[];
 }
 
 export interface Datum {
+    date:    string;
     qty?:    number;
     source?: null;
-    date:    string;
-    Avg?:    number;
     Min?:    number;
+    Avg?:    number;
     Max?:    number;
 }
 
+export enum MetricUnits {
+    CM = "cm",
+    Count = "count",
+    CountMin = "count/min",
+    DBASPL = "dBASPL",
+    DegC = "degC",
+    Empty = "%",
+    G = "g",
+    Hr = "hr",
+    Iu = "IU",
+    KJ = "kJ",
+    KM = "km",
+    KMHr = "km/hr",
+    Kg = "kg",
+    L = "L",
+    LMin = "L/min",
+    M = "m",
+    ML = "mL",
+    MS = "ms",
+    Mcg = "mcg",
+    Mg = "mg",
+    Min = "min",
+    MlKgMin = "ml/(kg·min)",
+    MmHg = "mmHg",
+    MmolL = "mmol/L",
+    S = "s",
+    UnitsMS = "m/s",
+}
+
 export interface Workout {
-    avgHeartRate:             ActiveEnergy;
-    end:                      string;
-    name:                     Name;
-    activeEnergy:             ActiveEnergy;
-    maxHeartRate:             ActiveEnergy;
-    intensity:                ActiveEnergy;
-    swimCadence:              ActiveEnergy;
-    totalSwimmingStrokeCount: ActiveEnergy;
-    start:                    string;
-    elevation:                Elevation;
-    route:                    any[];
-    heartRateData:            HeartRate[];
-    stepCount:                ActiveEnergy;
-    temperature:              ActiveEnergy;
-    flightsClimbed:           ActiveEnergy;
-    humidity:                 ActiveEnergy;
+    route:                    Route[];
     heartRateRecovery:        HeartRate[];
-    totalEnergy:              ActiveEnergy;
-    stepCadence:              ActiveEnergy;
+    elevation:                Elevation;
     distance:                 ActiveEnergy;
+    totalSwimmingStrokeCount: ActiveEnergy;
+    humidity:                 ActiveEnergy;
+    name:                     Name;
+    start:                    string;
+    end:                      string;
     isIndoor:                 boolean;
+    stepCadence:              ActiveEnergy;
+    heartRateData:            HeartRate[];
+    flightsClimbed:           ActiveEnergy;
+    maxHeartRate:             ActiveEnergy;
+    totalEnergy:              ActiveEnergy;
+    temperature:              ActiveEnergy;
+    stepCount:                ActiveEnergy;
     speed:                    ActiveEnergy;
+    avgHeartRate:             ActiveEnergy;
+    activeEnergy:             ActiveEnergy;
+    swimCadence:              ActiveEnergy;
+    intensity:                ActiveEnergy;
 }
 
 export interface ActiveEnergy {
-    qty:   number;
     units: ActiveEnergyUnits;
+    qty:   number;
 }
 
 export enum ActiveEnergyUnits {
@@ -75,25 +104,30 @@ export enum ActiveEnergyUnits {
 }
 
 export interface Elevation {
+    units:   MetricUnits;
     ascent:  number;
     descent: number;
-    units:   ElevationUnits;
-}
-
-export enum ElevationUnits {
-    M = "m",
 }
 
 export interface HeartRate {
-    qty:   number;
     units: ActiveEnergyUnits;
+    qty:   number;
     date:  string;
 }
 
 export enum Name {
+    Cycling = "Cycling",
+    FitnessGaming = "Fitness Gaming",
     FunctionalStrengthTraining = "Functional Strength Training",
     Swimming = "Swimming",
     Walking = "Walking",
+}
+
+export interface Route {
+    lon:       number;
+    altitude:  number;
+    timestamp: string;
+    lat:       number;
 }
 
 // Converts JSON strings to/from your types
@@ -269,56 +303,90 @@ const typeMap: any = {
         { json: "workouts", js: "workouts", typ: a(r("Workout")) },
     ], false),
     "Metric": o([
-        { json: "units", js: "units", typ: "" },
-        { json: "data", js: "data", typ: a(r("Datum")) },
         { json: "name", js: "name", typ: "" },
+        { json: "units", js: "units", typ: r("MetricUnits") },
+        { json: "data", js: "data", typ: a(r("Datum")) },
     ], false),
     "Datum": o([
+        { json: "date", js: "date", typ: "" },
         { json: "qty", js: "qty", typ: u(undefined, 3.14) },
         { json: "source", js: "source", typ: u(undefined, null) },
-        { json: "date", js: "date", typ: "" },
+        { json: "Min", js: "Min", typ: u(undefined, 3.14) },
         { json: "Avg", js: "Avg", typ: u(undefined, 3.14) },
-        { json: "Min", js: "Min", typ: u(undefined, 0) },
-        { json: "Max", js: "Max", typ: u(undefined, 0) },
+        { json: "Max", js: "Max", typ: u(undefined, 3.14) },
     ], false),
     "Workout": o([
-        { json: "avgHeartRate", js: "avgHeartRate", typ: r("ActiveEnergy") },
-        { json: "end", js: "end", typ: "" },
-        { json: "name", js: "name", typ: r("Name") },
-        { json: "activeEnergy", js: "activeEnergy", typ: r("ActiveEnergy") },
-        { json: "maxHeartRate", js: "maxHeartRate", typ: r("ActiveEnergy") },
-        { json: "intensity", js: "intensity", typ: r("ActiveEnergy") },
-        { json: "swimCadence", js: "swimCadence", typ: r("ActiveEnergy") },
-        { json: "totalSwimmingStrokeCount", js: "totalSwimmingStrokeCount", typ: r("ActiveEnergy") },
-        { json: "start", js: "start", typ: "" },
-        { json: "elevation", js: "elevation", typ: r("Elevation") },
-        { json: "route", js: "route", typ: a("any") },
-        { json: "heartRateData", js: "heartRateData", typ: a(r("HeartRate")) },
-        { json: "stepCount", js: "stepCount", typ: r("ActiveEnergy") },
-        { json: "temperature", js: "temperature", typ: r("ActiveEnergy") },
-        { json: "flightsClimbed", js: "flightsClimbed", typ: r("ActiveEnergy") },
-        { json: "humidity", js: "humidity", typ: r("ActiveEnergy") },
+        { json: "route", js: "route", typ: a(r("Route")) },
         { json: "heartRateRecovery", js: "heartRateRecovery", typ: a(r("HeartRate")) },
-        { json: "totalEnergy", js: "totalEnergy", typ: r("ActiveEnergy") },
-        { json: "stepCadence", js: "stepCadence", typ: r("ActiveEnergy") },
+        { json: "elevation", js: "elevation", typ: r("Elevation") },
         { json: "distance", js: "distance", typ: r("ActiveEnergy") },
+        { json: "totalSwimmingStrokeCount", js: "totalSwimmingStrokeCount", typ: r("ActiveEnergy") },
+        { json: "humidity", js: "humidity", typ: r("ActiveEnergy") },
+        { json: "name", js: "name", typ: r("Name") },
+        { json: "start", js: "start", typ: "" },
+        { json: "end", js: "end", typ: "" },
         { json: "isIndoor", js: "isIndoor", typ: true },
+        { json: "stepCadence", js: "stepCadence", typ: r("ActiveEnergy") },
+        { json: "heartRateData", js: "heartRateData", typ: a(r("HeartRate")) },
+        { json: "flightsClimbed", js: "flightsClimbed", typ: r("ActiveEnergy") },
+        { json: "maxHeartRate", js: "maxHeartRate", typ: r("ActiveEnergy") },
+        { json: "totalEnergy", js: "totalEnergy", typ: r("ActiveEnergy") },
+        { json: "temperature", js: "temperature", typ: r("ActiveEnergy") },
+        { json: "stepCount", js: "stepCount", typ: r("ActiveEnergy") },
         { json: "speed", js: "speed", typ: r("ActiveEnergy") },
+        { json: "avgHeartRate", js: "avgHeartRate", typ: r("ActiveEnergy") },
+        { json: "activeEnergy", js: "activeEnergy", typ: r("ActiveEnergy") },
+        { json: "swimCadence", js: "swimCadence", typ: r("ActiveEnergy") },
+        { json: "intensity", js: "intensity", typ: r("ActiveEnergy") },
     ], false),
     "ActiveEnergy": o([
-        { json: "qty", js: "qty", typ: 3.14 },
         { json: "units", js: "units", typ: r("ActiveEnergyUnits") },
+        { json: "qty", js: "qty", typ: 3.14 },
     ], false),
     "Elevation": o([
-        { json: "ascent", js: "ascent", typ: 0 },
+        { json: "units", js: "units", typ: r("MetricUnits") },
+        { json: "ascent", js: "ascent", typ: 3.14 },
         { json: "descent", js: "descent", typ: 0 },
-        { json: "units", js: "units", typ: r("ElevationUnits") },
     ], false),
     "HeartRate": o([
-        { json: "qty", js: "qty", typ: 3.14 },
         { json: "units", js: "units", typ: r("ActiveEnergyUnits") },
+        { json: "qty", js: "qty", typ: 3.14 },
         { json: "date", js: "date", typ: "" },
     ], false),
+    "Route": o([
+        { json: "lon", js: "lon", typ: 3.14 },
+        { json: "altitude", js: "altitude", typ: 3.14 },
+        { json: "timestamp", js: "timestamp", typ: "" },
+        { json: "lat", js: "lat", typ: 3.14 },
+    ], false),
+    "MetricUnits": [
+        "cm",
+        "count",
+        "count/min",
+        "dBASPL",
+        "degC",
+        "%",
+        "g",
+        "hr",
+        "IU",
+        "kJ",
+        "km",
+        "km/hr",
+        "kg",
+        "L",
+        "L/min",
+        "m",
+        "mL",
+        "ms",
+        "mcg",
+        "mg",
+        "min",
+        "ml/(kg·min)",
+        "mmHg",
+        "mmol/L",
+        "s",
+        "m/s",
+    ],
     "ActiveEnergyUnits": [
         "bpm",
         "count",
@@ -331,10 +399,9 @@ const typeMap: any = {
         "spm",
         "steps",
     ],
-    "ElevationUnits": [
-        "m",
-    ],
     "Name": [
+        "Cycling",
+        "Fitness Gaming",
         "Functional Strength Training",
         "Swimming",
         "Walking",
