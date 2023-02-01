@@ -1,6 +1,6 @@
 import { APIGatewayEvent, S3Event, SNSEvent } from "aws-lambda";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { Convert, Datum } from "./SourceData";
+import { Datum, SourceData } from "./SourceData";
 import {
   BatchWriteItemCommand,
   DynamoDBClient,
@@ -33,7 +33,7 @@ export async function handler(event: SNSEvent | APIGatewayEvent) {
   if (!dataStr) {
     throw new Error("Failed to read data from S3");
   }
-  const data = Convert.toSourceData(dataStr);
+  const data: SourceData = JSON.parse(dataStr);
 
   const walkingData = data.data.metrics
     .find((metric) => metric.name === WALKING_METRIC)
