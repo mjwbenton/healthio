@@ -48,7 +48,7 @@ export async function getData(
     total,
     days:
       results.Items?.map((val) => ({
-        date: val.dateAttribute!.S!,
+        date: val.date!.S!,
         m: parseInt(val.value.N ?? "0"),
       })) ?? [],
   };
