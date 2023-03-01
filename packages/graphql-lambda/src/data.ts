@@ -8,11 +8,19 @@ const { DATA_TABLE } = cleanEnv(process.env, {
   DATA_TABLE: str(),
 });
 
-export async function getSummedValue(
+export type Data = {
+  total: number;
+  days: Array<{
+    date: string;
+    m: number;
+  }>;
+};
+
+export async function getData(
   metric: string,
   from: Date,
   to: Date
-): Promise<number> {
+): Promise<Data> {
   const results = await DYNAMO_CLIENT.send(
     new QueryCommand({
       TableName: DATA_TABLE,
@@ -31,10 +39,17 @@ export async function getSummedValue(
   if (results.LastEvaluatedKey) {
     throw new Error("Failed to get all data required");
   }
-  return (
+  const total =
     results.Items?.reduce(
       (acc, cur) => acc + parseInt(cur.value.N ?? "0"),
       0
-    ) ?? 0
-  );
+    ) ?? 0;
+  return {
+    total,
+    days:
+      results.Items?.map((val) => ({
+        date: val.dateAttribute!.S!,
+        m: parseInt(val.value.N ?? "0"),
+      })) ?? [],
+  };
 }

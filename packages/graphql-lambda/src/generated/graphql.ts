@@ -16,11 +16,18 @@ export type Scalars = {
 };
 
 export type Activity = {
-  swimmingDistance: Distance;
-  walkingRunningDistance: Distance;
+  swimmingDistance: DistanceTotal;
+  walkingRunningDistance: DistanceTotal;
 };
 
-export type Distance = {
+export type DistanceDay = {
+  date: Scalars['Date'];
+  km: Scalars['Float'];
+  m: Scalars['Int'];
+};
+
+export type DistanceTotal = {
+  days: Array<DistanceDay>;
   km: Scalars['Float'];
   m: Scalars['Int'];
 };
@@ -108,7 +115,8 @@ export type ResolversTypes = ResolversObject<{
   Activity: ResolverTypeWrapper<Activity>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  Distance: ResolverTypeWrapper<Distance>;
+  DistanceDay: ResolverTypeWrapper<DistanceDay>;
+  DistanceTotal: ResolverTypeWrapper<DistanceTotal>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Query: ResolverTypeWrapper<{}>;
@@ -120,7 +128,8 @@ export type ResolversParentTypes = ResolversObject<{
   Activity: Activity;
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
-  Distance: Distance;
+  DistanceDay: DistanceDay;
+  DistanceTotal: DistanceTotal;
   Float: Scalars['Float'];
   Int: Scalars['Int'];
   Query: {};
@@ -128,8 +137,8 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type ActivityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Activity'] = ResolversParentTypes['Activity']> = ResolversObject<{
-  swimmingDistance?: Resolver<ResolversTypes['Distance'], ParentType, ContextType>;
-  walkingRunningDistance?: Resolver<ResolversTypes['Distance'], ParentType, ContextType>;
+  swimmingDistance?: Resolver<ResolversTypes['DistanceTotal'], ParentType, ContextType>;
+  walkingRunningDistance?: Resolver<ResolversTypes['DistanceTotal'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -137,7 +146,15 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
-export type DistanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Distance'] = ResolversParentTypes['Distance']> = ResolversObject<{
+export type DistanceDayResolvers<ContextType = any, ParentType extends ResolversParentTypes['DistanceDay'] = ResolversParentTypes['DistanceDay']> = ResolversObject<{
+  date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  km?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  m?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DistanceTotalResolvers<ContextType = any, ParentType extends ResolversParentTypes['DistanceTotal'] = ResolversParentTypes['DistanceTotal']> = ResolversObject<{
+  days?: Resolver<Array<ResolversTypes['DistanceDay']>, ParentType, ContextType>;
   km?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   m?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -150,7 +167,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 export type Resolvers<ContextType = any> = ResolversObject<{
   Activity?: ActivityResolvers<ContextType>;
   Date?: GraphQLScalarType;
-  Distance?: DistanceResolvers<ContextType>;
+  DistanceDay?: DistanceDayResolvers<ContextType>;
+  DistanceTotal?: DistanceTotalResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 }>;
 

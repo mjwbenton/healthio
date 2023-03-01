@@ -5,11 +5,18 @@ type Query {
 }
 
 type Activity {
-  swimmingDistance: Distance!
-  walkingRunningDistance: Distance!
+  swimmingDistance: DistanceTotal!
+  walkingRunningDistance: DistanceTotal!
 }
 
-type Distance {
+type DistanceTotal {
   m: Int!
   km: Float!
+  days: [DistanceDay!]!
+}
+
+type DistanceDay {
+  m: Int!
+  km: Float!
+  date: Date!
 }
