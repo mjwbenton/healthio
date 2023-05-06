@@ -13,10 +13,18 @@ type DistanceTotal {
   m: Int!
   km: Float!
   days: [DistanceDay!]!
+  months: [DistanceMonth!]!
 }
 
 type DistanceDay {
   m: Int!
   km: Float!
   date: Date!
+}
+
+type DistanceMonth {
+  m: Int!
+  km: Float!
+  year: Int!
+  month: Int!
 }

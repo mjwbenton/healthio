@@ -2,10 +2,16 @@ import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateLambdaHandler } from "@as-integrations/aws-lambda";
 import { DateResolver } from "graphql-scalars";
 import { readFileSync } from "fs";
-import { QueryActivityArgs, Resolvers } from "./generated/graphql";
+import {
+  DistanceMonth,
+  QueryActivityArgs,
+  Resolvers,
+} from "./generated/graphql";
 import { getData } from "./data";
 import { getForwardedArgs, withForwardedArgs } from "./util";
 import parseISO from "date-fns/parseISO";
+import getMonth from "date-fns/getMonth";
+import getYear from "date-fns/getYear";
 
 const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8" });
 
@@ -27,6 +33,28 @@ const resolvers: Resolvers = {
           date: parseISO(date),
           km: m / 1000,
         })),
+        months: data.days.reduce<DistanceMonth[]>((acc, { m, date }) => {
+          const dateObj = parseISO(date);
+          const month = getMonth(dateObj) + 1;
+          const year = getYear(dateObj);
+          const currentMonth = acc[acc.length - 1];
+          if (
+            currentMonth &&
+            currentMonth.year === year &&
+            currentMonth.month === month
+          ) {
+            currentMonth.m += m;
+            currentMonth.km = currentMonth.m / 1000;
+          } else {
+            acc.push({
+              m,
+              month,
+              year,
+              km: m / 1000,
+            });
+          }
+          return acc;
+        }, []),
       };
     },
     walkingRunningDistance: async (parent) => {
@@ -41,6 +69,28 @@ const resolvers: Resolvers = {
           date: parseISO(date),
           km: m / 1000,
         })),
+        months: data.days.reduce<DistanceMonth[]>((acc, { m, date }) => {
+          const dateObj = parseISO(date);
+          const month = getMonth(dateObj) + 1;
+          const year = getYear(dateObj);
+          const currentMonth = acc[acc.length - 1];
+          if (
+            currentMonth &&
+            currentMonth.year === year &&
+            currentMonth.month === month
+          ) {
+            currentMonth.m += m;
+            currentMonth.km = currentMonth.m / 1000;
+          } else {
+            acc.push({
+              m,
+              month,
+              year,
+              km: m / 1000,
+            });
+          }
+          return acc;
+        }, []),
       };
     },
   },
