@@ -11,10 +11,12 @@ import {
   CachePolicy,
   Distribution,
   OriginProtocolPolicy,
+  OriginRequestPolicy,
   ViewerProtocolPolicy,
 } from "aws-cdk-lib/aws-cloudfront";
 import { HttpOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 
 const HOSTED_ZONE = "mattb.tech";
 const HOSTED_ZONE_ID = "Z2GPSB1CDK86DH";
@@ -27,6 +29,8 @@ export default class HealthioSyncStack extends Stack {
     { dataBucket }: { dataBucket: IBucket }
   ) {
     super(scope, id);
+
+    const secret = new Secret(this, "Secret");
 
     const lambda = new NodejsFunction(this, "Lambda", {
       entry: path.join(__dirname, "../../sync-lambda/dist/index.js"),
@@ -42,10 +46,12 @@ export default class HealthioSyncStack extends Stack {
       memorySize: 1024,
       environment: {
         DATA_BUCKET: dataBucket.bucketName,
+        SECRET_NAME: secret.secretName,
       },
     });
     const url = lambda.addFunctionUrl({ authType: FunctionUrlAuthType.NONE });
     dataBucket.grantWrite(lambda);
+    secret.grantRead(lambda);
 
     const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
       hostedZoneId: HOSTED_ZONE_ID,
@@ -63,9 +69,10 @@ export default class HealthioSyncStack extends Stack {
           protocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
           httpsPort: 443,
         }),
+        originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
         allowedMethods: AllowedMethods.ALLOW_ALL,
-        cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+        cachePolicy: CachePolicy.CACHING_DISABLED,
       },
       certificate,
       domainNames: [DOMAIN_NAME],
