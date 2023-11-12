@@ -12,7 +12,7 @@
     "fix": "../../scripts/fix.sh",
     "check": "../../scripts/check.sh",
     "watch": "../../scripts/watch.sh",
-    "deploy": "yarn build && cdk deploy --profile cdk-deploy --require-approval never --all",
+    "deploy": "yarn build && cdk deploy --require-approval never --all",
     "generate-diagram": "cdk synth && cdk-dia"
   },
   "dependencies": {
