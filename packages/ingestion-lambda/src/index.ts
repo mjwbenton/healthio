@@ -1,12 +1,20 @@
 import { APIGatewayEvent, S3Event, SNSEvent } from "aws-lambda";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { Datum, SourceData } from "./SourceData";
+import {
+  Datum,
+  MetricsData,
+  Workout,
+  WorkoutData,
+  isMetricsData,
+  isWorkoutData,
+} from "./SourceData";
 import {
   BatchWriteItemCommand,
   DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 import chunk from "lodash.chunk";
 import { cleanEnv, str } from "envalid";
+import { parseISO } from "date-fns/parseISO";
 
 const S3 = new S3Client({});
 
@@ -18,8 +26,9 @@ const CHUNK_SIZE = 25;
 
 const KM_TO_M = 1000;
 
-const { DATA_TABLE } = cleanEnv(process.env, {
+const { DATA_TABLE, WORKOUT_TABLE } = cleanEnv(process.env, {
   DATA_TABLE: str(),
+  WORKOUT_TABLE: str(),
 });
 
 export async function handler(event: SNSEvent | APIGatewayEvent) {
@@ -33,8 +42,20 @@ export async function handler(event: SNSEvent | APIGatewayEvent) {
   if (!dataStr) {
     throw new Error("Failed to read data from S3");
   }
-  const data: SourceData = JSON.parse(dataStr);
+  const data: MetricsData | WorkoutData = JSON.parse(dataStr);
 
+  if (isMetricsData(data)) {
+    return handleMetricsData(data);
+  }
+
+  if (isWorkoutData(data)) {
+    return handleWorkoutData(data);
+  }
+
+  throw new Error("Invalid data type");
+}
+
+async function handleMetricsData(data: MetricsData) {
   const walkingData = data.data.metrics
     .find((metric) => metric.name === WALKING_METRIC)
     ?.data?.map((datum) => ({
@@ -62,6 +83,56 @@ export async function handler(event: SNSEvent | APIGatewayEvent) {
       swimmingData,
     },
   };
+}
+
+async function handleWorkoutData(data: WorkoutData) {
+  const workoutData = data.data.workouts.map((workout) => ({
+    type: extractWorkoutType(workout),
+    start: extractStart(workout),
+    durationSeconds: extractDuration(workout),
+  }));
+  await writeWorkouts(workoutData);
+
+  return {
+    statusCode: 200,
+    body: {
+      workoutData,
+    },
+  };
+}
+
+async function writeWorkouts(
+  data: Array<{ type: string; start: string; durationSeconds: number }>
+) {
+  return Promise.all(
+    chunk(data, CHUNK_SIZE).map(async (batch) => {
+      try {
+        return await DYNAMO_CLIENT.send(
+          new BatchWriteItemCommand({
+            RequestItems: {
+              [WORKOUT_TABLE]: batch.map((item) => ({
+                PutRequest: {
+                  Item: {
+                    type: { S: item.type },
+                    start: { S: item.start },
+                    durationSeconds: { N: item.durationSeconds.toString() },
+                  },
+                },
+              })),
+            },
+          })
+        );
+      } catch (e) {
+        throw new Error(
+          `Failed on chunk containing workout data: ${JSON.stringify(
+            batch,
+            null,
+            2
+          )}`
+        );
+      }
+    })
+  );
 }
 
 async function writeData(
@@ -125,6 +196,18 @@ function extractFromAPIEvent(event: APIGatewayEvent): {
 
 function extractDate(datum: Datum) {
   return datum.date.slice(0, 10);
+}
+
+function extractWorkoutType(workout: Workout) {
+  return workout.name.toLowerCase().replace(" ", "_");
+}
+
+function extractStart(workout: Workout) {
+  return parseISO(workout.start).toISOString();
+}
+
+function extractDuration(workout: Workout) {
+  return Math.round(workout.duration);
 }
 
 function extractValue(datum: Datum, multiplier: number = 1) {
