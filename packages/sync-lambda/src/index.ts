@@ -27,6 +27,7 @@ export async function handler(event: APIGatewayEvent) {
   const secretHeaderValue = event.headers[SECRET_HEADER_NAME];
 
   if (secretHeaderValue !== secretValue) {
+    console.log(`Recieved ${secretHeaderValue} in ${SECRET_HEADER_NAME}`);
     throw new Error("Invalid secret");
   }
 
