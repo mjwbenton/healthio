@@ -14,7 +14,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import chunk from "lodash.chunk";
 import { cleanEnv, str } from "envalid";
-import { parseISO } from "date-fns/parseISO";
+import { parse } from "date-fns/parse";
 
 const S3 = new S3Client({});
 
@@ -203,7 +203,11 @@ function extractWorkoutType(workout: Workout) {
 }
 
 function extractStart(workout: Workout) {
-  return parseISO(workout.start).toISOString();
+  return parse(
+    workout.start,
+    "yyyy-MM-dd HH:mm:ss XX",
+    new Date()
+  ).toISOString();
 }
 
 function extractDuration(workout: Workout) {
