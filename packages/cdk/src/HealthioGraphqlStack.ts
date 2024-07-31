@@ -24,7 +24,7 @@ export default class HealthioGraphqlStack extends Stack {
   constructor(
     scope: Construct,
     id: string,
-    { dataTable }: { dataTable: ITable }
+    { dataTable, workoutTable }: { dataTable: ITable; workoutTable: ITable }
   ) {
     super(scope, id);
 
@@ -51,6 +51,7 @@ export default class HealthioGraphqlStack extends Stack {
       memorySize: 1024,
       environment: {
         DATA_TABLE: dataTable.tableName,
+        WORKOUT_TABLE: workoutTable.tableName,
       },
     });
     const url = lambda.addFunctionUrl({ authType: FunctionUrlAuthType.NONE });

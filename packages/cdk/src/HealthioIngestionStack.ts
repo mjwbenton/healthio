@@ -24,6 +24,7 @@ const ALARM_TOPIC = "arn:aws:sns:us-east-1:858777967843:general-alarms";
 
 export default class HealthioIngestionStack extends Stack {
   public readonly dataTable: ITable;
+  public readonly workoutTable: ITable;
   public readonly ingestionFunction: IFunction;
 
   constructor(scope: Construct, id: string) {
@@ -31,6 +32,13 @@ export default class HealthioIngestionStack extends Stack {
     this.dataTable = new Table(this, "DataTable", {
       partitionKey: { name: "metric", type: AttributeType.STRING },
       sortKey: { name: "date", type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      pointInTimeRecovery: true,
+    });
+
+    this.workoutTable = new Table(this, "WorkoutTable", {
+      partitionKey: { name: "type", type: AttributeType.STRING },
+      sortKey: { name: "start", type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       pointInTimeRecovery: true,
     });
@@ -49,10 +57,12 @@ export default class HealthioIngestionStack extends Stack {
       memorySize: 1024,
       environment: {
         DATA_TABLE: this.dataTable.tableName,
+        WORKOUT_TABLE: this.workoutTable.tableName,
       },
     });
 
     this.dataTable.grantReadWriteData(this.ingestionFunction);
+    this.workoutTable.grantReadWriteData(this.ingestionFunction);
 
     const alarmAction = new SnsAction(
       Topic.fromTopicArn(this, "AlarmTopic", ALARM_TOPIC)

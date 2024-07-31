@@ -13,4 +13,5 @@ const ingestionStack = new HealthioIngestionStack(app, "HealthioIngestion");
 dataStack.subscribeLambdaToNewData(ingestionStack.ingestionFunction);
 new HealthioGraphqlStack(app, "HealthioGraphql", {
   dataTable: ingestionStack.dataTable,
+  workoutTable: ingestionStack.workoutTable,
 });
