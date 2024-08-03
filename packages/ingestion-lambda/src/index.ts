@@ -60,7 +60,7 @@ async function handleMetricsData(data: MetricsData) {
     .find((metric) => metric.name === WALKING_METRIC)
     ?.data?.map((datum) => ({
       date: extractDate(datum),
-      value: extractKmValue(datum),
+      value: extractValue(datum, KM_TO_M),
     }));
   if (walkingData) {
     await writeData(WALKING_METRIC, walkingData);
@@ -70,7 +70,7 @@ async function handleMetricsData(data: MetricsData) {
     .find((metric) => metric.name === SWIMMING_METRIC)
     ?.data?.map((datum) => ({
       date: extractDate(datum),
-      value: extractValue(datum, "m"),
+      value: extractValue(datum),
     }));
   if (swimmingData) {
     await writeData(SWIMMING_METRIC, swimmingData);
@@ -92,7 +92,7 @@ async function handleWorkoutData(data: WorkoutData) {
       type: extractWorkoutType(workout),
       start: extractStart(workout),
       durationSeconds: extractDuration(workout),
-      activeEnergyBurned: extractValue(workout.activeEnergyBurned, "kJ"), // This is being incorrectly returned by Auto Export. Is actually kcal.
+      activeEnergyBurned: extractUnitsValue(workout.activeEnergyBurned, "kJ"), // This is being incorrectly returned by Auto Export. Is actually kcal.
       ...extractOptionalWorkoutData(workout),
     };
   });
@@ -241,7 +241,14 @@ function extractKmValue(datum: { qty?: number; units: string }) {
   return Math.round((datum.qty + Number.EPSILON) * KM_TO_M);
 }
 
-function extractValue(
+function extractValue(datum: Datum, multiplier: number = 1) {
+  if (!datum.qty) {
+    return 0;
+  }
+  return Math.round((datum.qty + Number.EPSILON) * multiplier);
+}
+
+function extractUnitsValue(
   datum: { qty?: number; units: string },
   expectedUnits: string
 ) {

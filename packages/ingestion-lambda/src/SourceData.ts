@@ -18,7 +18,6 @@ export interface Metric {
 export interface Datum {
   date: string;
   qty?: number;
-  units: string;
 }
 
 export interface Workout {
