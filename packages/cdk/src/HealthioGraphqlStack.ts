@@ -56,6 +56,7 @@ export default class HealthioGraphqlStack extends Stack {
     });
     const url = lambda.addFunctionUrl({ authType: FunctionUrlAuthType.NONE });
     dataTable.grantReadData(lambda);
+    workoutTable.grantReadData(lambda);
 
     const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
       hostedZoneId: HOSTED_ZONE_ID,
