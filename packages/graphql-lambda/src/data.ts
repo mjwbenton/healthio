@@ -84,8 +84,8 @@ export async function getWorkoutData(
   const workouts =
     results.Items?.map((val) => ({
       startTime: val.start!.S!,
-      duration: parseInt(val.duration!.N ?? "0"),
-      activeEnergyBurned: parseInt(val.activeEnergyBurned!.N ?? "0"),
+      duration: parseInt(val.durationSeconds?.N ?? "0"),
+      activeEnergyBurned: parseInt(val.activeEnergyBurned?.N ?? "0"),
       distance: val.distance?.N ? parseInt(val.distance.N) : undefined,
     })) ?? [];
 
