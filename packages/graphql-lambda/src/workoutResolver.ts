@@ -4,10 +4,19 @@ import { ActivityWorkoutsArgs, QueryActivityArgs } from "./generated/graphql";
 import { getForwardedArgs } from "./util";
 import { getYear } from "date-fns/esm";
 
+const VALID_WORKOUT_TYPES = [
+  "pool_swim",
+  "functional_strength_training",
+  "outdoor_run",
+];
+
 export default async function workoutResolver(
   parent: unknown,
   { type }: ActivityWorkoutsArgs
 ) {
+  if (!VALID_WORKOUT_TYPES.includes(type)) {
+    return null;
+  }
   const { startDate, endDate } = getForwardedArgs<QueryActivityArgs>(parent);
   const workouts = await getWorkoutData(type, startDate, endDate);
 

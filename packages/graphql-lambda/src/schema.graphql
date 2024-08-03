@@ -14,7 +14,7 @@ type Query {
 type Activity {
   swimmingDistance: DistanceTotal!
   walkingRunningDistance: DistanceTotal!
-  workouts(type: ID!): WorkoutTotal!
+  workouts(type: ID!): WorkoutTotal
 }
 
 type WorkoutTotal {
