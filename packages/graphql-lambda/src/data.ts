@@ -65,11 +65,15 @@ export async function getWorkoutData(
   const results = await DYNAMO_CLIENT.send(
     new QueryCommand({
       TableName: WORKOUT_TABLE,
-      KeyConditionExpression: "type = :t and start between :d1 and :d2",
+      KeyConditionExpression:
+        "#typeAttribute = :t and start between :d1 and :d2",
       ExpressionAttributeValues: {
         ":t": { S: type },
         ":d1": { S: from.toISOString() },
         ":d2": { S: to.toISOString() },
+      },
+      ExpressionAttributeNames: {
+        "#typeAttribute": "type",
       },
     })
   );
