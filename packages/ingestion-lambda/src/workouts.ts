@@ -73,7 +73,7 @@ async function writeWorkouts(
 }
 
 function extractWorkoutType(workout: Workout) {
-  return workout.name.toLowerCase().replace(" ", "_");
+  return workout.name.toLowerCase().replaceAll(" ", "_");
 }
 
 function extractStart(workout: Workout) {
