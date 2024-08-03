@@ -66,7 +66,7 @@ export async function getWorkoutData(
     new QueryCommand({
       TableName: WORKOUT_TABLE,
       KeyConditionExpression:
-        "#typeAttribute = :t and start between :d1 and :d2",
+        "#typeAttribute = :t and #startAttribute between :d1 and :d2",
       ExpressionAttributeValues: {
         ":t": { S: type },
         ":d1": { S: from.toISOString() },
@@ -74,6 +74,7 @@ export async function getWorkoutData(
       },
       ExpressionAttributeNames: {
         "#typeAttribute": "type",
+        "#startAttribute": "start",
       },
     })
   );
