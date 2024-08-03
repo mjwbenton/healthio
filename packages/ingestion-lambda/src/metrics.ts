@@ -2,10 +2,10 @@ import chunk from "lodash.chunk";
 import { Datum, MetricsData } from "./SourceData";
 import { CHUNK_SIZE, DATA_TABLE, DYNAMO_CLIENT } from "./dynamo";
 import { BatchWriteItemCommand } from "@aws-sdk/client-dynamodb";
+import { KM_TO_M } from "./conversion";
 
 const WALKING_METRIC = "walking_running_distance";
 const SWIMMING_METRIC = "swimming_distance";
-const KM_TO_M = 1000;
 
 export async function handleMetricsData(data: MetricsData) {
   const walkingData = data.data.metrics

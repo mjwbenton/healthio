@@ -3,8 +3,7 @@ import { CHUNK_SIZE, DYNAMO_CLIENT, WORKOUT_TABLE } from "./dynamo";
 import { BatchWriteItemCommand } from "@aws-sdk/client-dynamodb";
 import { Workout, WorkoutData } from "./SourceData";
 import { parse } from "date-fns/parse";
-
-const KM_TO_M = 1000;
+import { KM_TO_M } from "./conversion";
 
 export async function handleWorkoutData(data: WorkoutData) {
   const workoutData = data.data.workouts.map((workout) => {
