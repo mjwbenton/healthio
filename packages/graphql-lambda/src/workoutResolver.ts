@@ -46,7 +46,7 @@ function generateMonthsBetween(from: Date, to: Date) {
 function aggregateWorkouts(workouts: Array<Workout>) {
   return workouts.reduce(
     (acc, cur) => {
-      acc.duration += cur.duration;
+      acc.durationSeconds += cur.durationSeconds;
       acc.activeEnergyBurned += cur.activeEnergyBurned;
       if (cur.distance) {
         acc.distance = (acc.distance ?? 0) + cur.distance;
@@ -54,7 +54,7 @@ function aggregateWorkouts(workouts: Array<Workout>) {
       return acc;
     },
     {
-      duration: 0,
+      durationSeconds: 0,
       activeEnergyBurned: 0,
       distance: undefined as number | undefined,
     }
@@ -63,7 +63,7 @@ function aggregateWorkouts(workouts: Array<Workout>) {
 
 function transformNumbers(workout: Omit<Workout, "startTime">) {
   return {
-    durationSeconds: workout.duration,
+    durationSeconds: workout.durationSeconds,
     activeEnergyBurned: workout.activeEnergyBurned,
     ...(workout.distance
       ? { distance: { m: workout.distance, km: workout.distance / 1000 } }

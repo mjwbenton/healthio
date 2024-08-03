@@ -52,7 +52,7 @@ export async function getMetricData(
 
 export type Workout = {
   startTime: string;
-  duration: number;
+  durationSeconds: number;
   activeEnergyBurned: number;
   distance?: number;
 };
@@ -81,13 +81,12 @@ export async function getWorkoutData(
   if (results.LastEvaluatedKey) {
     throw new Error("Failed to get all data required");
   }
-  const workouts =
+  return (
     results.Items?.map((val) => ({
       startTime: val.start!.S!,
-      duration: parseInt(val.durationSeconds?.N ?? "0"),
+      durationSeconds: parseInt(val.durationSeconds?.N ?? "0"),
       activeEnergyBurned: parseInt(val.activeEnergyBurned?.N ?? "0"),
       distance: val.distance?.N ? parseInt(val.distance.N) : undefined,
-    })) ?? [];
-
-  return workouts;
+    })) ?? []
+  );
 }
