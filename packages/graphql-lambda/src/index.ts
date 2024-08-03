@@ -1,12 +1,13 @@
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateLambdaHandler } from "@as-integrations/aws-lambda";
-import { DateResolver } from "graphql-scalars";
+import { DateResolver, DateTimeResolver } from "graphql-scalars";
 import { readFileSync } from "fs";
 import { Resolvers } from "./generated/graphql";
 import { withForwardedArgs } from "./util";
-import activityResolver from "./activityResolver";
+import metricResolver from "./metricResolver";
 import { buildSubgraphSchema } from "@apollo/subgraph";
 import { parse } from "graphql";
+import workoutResolver from "./workoutResolver";
 
 const typeDefs = parse(readFileSync("./schema.graphql", { encoding: "utf-8" }));
 
@@ -15,9 +16,11 @@ const SWIMMING_METRIC = "swimming_distance";
 
 const resolvers: Resolvers = {
   Date: DateResolver,
+  DateTime: DateTimeResolver,
   Activity: {
-    swimmingDistance: activityResolver(SWIMMING_METRIC),
-    walkingRunningDistance: activityResolver(WALKING_METRIC),
+    swimmingDistance: metricResolver(SWIMMING_METRIC),
+    walkingRunningDistance: metricResolver(WALKING_METRIC),
+    workouts: workoutResolver,
   },
   Query: {
     // TODO Sort out this ignore

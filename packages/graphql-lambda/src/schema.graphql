@@ -5,6 +5,7 @@ extend schema
   )
 
 scalar Date
+scalar DateTime
 
 type Query {
   activity(startDate: Date!, endDate: Date!): Activity!
@@ -13,6 +14,37 @@ type Query {
 type Activity {
   swimmingDistance: DistanceTotal!
   walkingRunningDistance: DistanceTotal!
+  workouts(type: ID!): WorkoutTotal!
+}
+
+type WorkoutTotal {
+  type: ID!
+  durationSeconds: Int!
+  activeEnergyBurned: Int!
+  distance: Distance
+  workouts: [Workout!]!
+  months: [WorkoutMonth!]!
+}
+
+type Workout {
+  startTime: DateTime!
+  durationSeconds: Int!
+  activeEnergyBurned: Int!
+  distance: Distance
+}
+
+type WorkoutMonth {
+  year: Int!
+  month: Int!
+  durationSeconds: Int!
+  activeEnergyBurned: Int!
+  distance: Distance
+  workouts: [Workout!]!
+}
+
+type Distance {
+  m: Int!
+  km: Float!
 }
 
 type DistanceTotal {

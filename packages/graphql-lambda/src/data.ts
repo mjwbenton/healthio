@@ -1,14 +1,10 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import formatISO from "date-fns/formatISO";
-import { cleanEnv, str } from "envalid";
+import { DATA_TABLE, WORKOUT_TABLE } from "./env";
 
 const DYNAMO_CLIENT = new DynamoDBClient({});
 
-const { DATA_TABLE } = cleanEnv(process.env, {
-  DATA_TABLE: str(),
-});
-
-export type Data = {
+export type MetricData = {
   total: number;
   days: Array<{
     date: string;
@@ -16,11 +12,11 @@ export type Data = {
   }>;
 };
 
-export async function getData(
+export async function getMetricData(
   metric: string,
   from: Date,
   to: Date
-): Promise<Data> {
+): Promise<MetricData> {
   const results = await DYNAMO_CLIENT.send(
     new QueryCommand({
       TableName: DATA_TABLE,
@@ -52,4 +48,41 @@ export async function getData(
         m: parseInt(val.value.N ?? "0"),
       })) ?? [],
   };
+}
+
+export type Workout = {
+  startTime: string;
+  duration: number;
+  activeEnergyBurned: number;
+  distance?: number;
+};
+
+export async function getWorkoutData(
+  type: string,
+  from: Date,
+  to: Date
+): Promise<Array<Workout>> {
+  const results = await DYNAMO_CLIENT.send(
+    new QueryCommand({
+      TableName: WORKOUT_TABLE,
+      KeyConditionExpression: "type = :t and start between :d1 and :d2",
+      ExpressionAttributeValues: {
+        ":t": { S: type },
+        ":d1": { S: from.toISOString() },
+        ":d2": { S: to.toISOString() },
+      },
+    })
+  );
+  if (results.LastEvaluatedKey) {
+    throw new Error("Failed to get all data required");
+  }
+  const workouts =
+    results.Items?.map((val) => ({
+      startTime: val.start!.S!,
+      duration: parseInt(val.duration!.N ?? "0"),
+      activeEnergyBurned: parseInt(val.activeEnergyBurned!.N ?? "0"),
+      distance: val.distance?.N ? parseInt(val.distance.N) : undefined,
+    })) ?? [];
+
+  return workouts;
 }

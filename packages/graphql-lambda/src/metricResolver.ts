@@ -1,14 +1,14 @@
 import parseISO from "date-fns/parseISO";
 import getMonth from "date-fns/getMonth";
 import getYear from "date-fns/getYear";
-import { getData } from "./data";
+import { getMetricData } from "./data";
 import { DistanceMonth, QueryActivityArgs } from "./generated/graphql";
 import { getForwardedArgs } from "./util";
 
-export default function activityResolver(metric: string) {
+export default function metricResolver(metric: string) {
   return async (parent: unknown) => {
     const { startDate, endDate } = getForwardedArgs<QueryActivityArgs>(parent);
-    const data = await getData(metric, startDate, endDate);
+    const data = await getMetricData(metric, startDate, endDate);
     return {
       m: data.total,
       km: data.total / 1000,
