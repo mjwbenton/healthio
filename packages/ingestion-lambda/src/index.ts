@@ -107,7 +107,13 @@ async function handleWorkoutData(data: WorkoutData) {
 }
 
 async function writeWorkouts(
-  data: Array<{ type: string; start: string; durationSeconds: number }>
+  data: Array<{
+    type: string;
+    start: string;
+    durationSeconds: number;
+    activeEnergyBurned: number;
+    distance?: number;
+  }>
 ) {
   return Promise.all(
     chunk(data, CHUNK_SIZE).map(async (batch) => {
@@ -121,6 +127,12 @@ async function writeWorkouts(
                     type: { S: item.type },
                     start: { S: item.start },
                     durationSeconds: { N: item.durationSeconds.toString() },
+                    activeEnergyBurned: {
+                      N: item.activeEnergyBurned.toString(),
+                    },
+                    ...(item.distance
+                      ? { distance: { N: item.distance.toString() } }
+                      : {}),
                   },
                 },
               })),
