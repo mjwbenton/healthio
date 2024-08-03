@@ -29,7 +29,7 @@ export interface Workout {
     qty: number;
     units: "km";
   };
-  activityEnergyBurned: {
+  activeEnergyBurned: {
     qty: number;
     units: "kJ"; // This is being incorrectly returned by Auto Export. Is actually kcal.
   };

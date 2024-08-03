@@ -92,7 +92,7 @@ async function handleWorkoutData(data: WorkoutData) {
       type: extractWorkoutType(workout),
       start: extractStart(workout),
       durationSeconds: extractDuration(workout),
-      activeEnergyBurned: extractValue(workout.activityEnergyBurned, "kJ"), // This is being incorrectly returned by Auto Export. Is actually kcal.
+      activeEnergyBurned: extractValue(workout.activeEnergyBurned, "kJ"), // This is being incorrectly returned by Auto Export. Is actually kcal.
       ...extractOptionalWorkoutData(workout),
     };
   });
