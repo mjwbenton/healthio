@@ -3,11 +3,10 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
   Datum,
   MetricsData,
-  BaseWorkout,
+  Workout,
   WorkoutData,
   isMetricsData,
   isWorkoutData,
-  isPoolWorkout,
 } from "./SourceData";
 import {
   BatchWriteItemCommand,
@@ -61,7 +60,7 @@ async function handleMetricsData(data: MetricsData) {
     .find((metric) => metric.name === WALKING_METRIC)
     ?.data?.map((datum) => ({
       date: extractDate(datum),
-      value: extractValue(datum, KM_TO_M),
+      value: extractKmValue(datum),
     }));
   if (walkingData) {
     await writeData(WALKING_METRIC, walkingData);
@@ -71,7 +70,7 @@ async function handleMetricsData(data: MetricsData) {
     .find((metric) => metric.name === SWIMMING_METRIC)
     ?.data?.map((datum) => ({
       date: extractDate(datum),
-      value: extractValue(datum),
+      value: extractValue(datum, "m"),
     }));
   if (swimmingData) {
     await writeData(SWIMMING_METRIC, swimmingData);
@@ -93,8 +92,8 @@ async function handleWorkoutData(data: WorkoutData) {
       type: extractWorkoutType(workout),
       start: extractStart(workout),
       durationSeconds: extractDuration(workout),
-      activeEnergyBurned: extractValue(workout.activityEnergyBurned),
-      ...extractAdditionalWorkoutData(workout),
+      activeEnergyBurned: extractValue(workout.activityEnergyBurned, "kJ"), // This is being incorrectly returned by Auto Export. Is actually kcal.
+      ...extractOptionalWorkoutData(workout),
     };
   });
   await writeWorkouts(workoutData);
@@ -204,11 +203,11 @@ function extractDate(datum: Datum) {
   return datum.date.slice(0, 10);
 }
 
-function extractWorkoutType(workout: BaseWorkout) {
+function extractWorkoutType(workout: Workout) {
   return workout.name.toLowerCase().replace(" ", "_");
 }
 
-function extractStart(workout: BaseWorkout) {
+function extractStart(workout: Workout) {
   return parse(
     workout.start,
     "yyyy-MM-dd HH:mm:ss XX",
@@ -216,21 +215,40 @@ function extractStart(workout: BaseWorkout) {
   ).toISOString();
 }
 
-function extractDuration(workout: BaseWorkout) {
+function extractDuration(workout: Workout) {
   return Math.round(workout.duration);
 }
 
-function extractValue(datum: { qty?: number }, multiplier: number = 1) {
+function extractKmValue(datum: { qty?: number; units: string }) {
   if (!datum.qty) {
     return 0;
   }
-  return Math.round((datum.qty + Number.EPSILON) * multiplier);
+  if (datum.units !== "km") {
+    throw new Error("Expecting km units");
+  }
+  return Math.round((datum.qty + Number.EPSILON) * KM_TO_M);
 }
 
-function extractAdditionalWorkoutData(workout: BaseWorkout) {
-  if (isPoolWorkout(workout)) {
+function extractValue(
+  datum: { qty?: number; units: string },
+  expectedUnits: string
+) {
+  if (!datum.qty) {
+    return 0;
+  }
+  if (datum.units !== expectedUnits) {
+    throw new Error(`Expecting ${expectedUnits} units`);
+  }
+  return Math.round(datum.qty + Number.EPSILON);
+}
+
+function extractOptionalWorkoutData(workout: Workout) {
+  if (workout.distance) {
+    if (workout.distance.units !== "km") {
+      throw new Error("Expecting km units for distance");
+    }
     return {
-      distance: extractValue(workout.distance, KM_TO_M),
+      distance: extractKmValue(workout.distance),
     };
   }
   return {};

@@ -6,7 +6,7 @@ export interface MetricsData {
 
 export interface WorkoutData {
   data: {
-    workouts: BaseWorkout[];
+    workouts: Workout[];
   };
 }
 
@@ -18,27 +18,22 @@ export interface Metric {
 export interface Datum {
   date: string;
   qty?: number;
+  units: string;
 }
 
-export interface BaseWorkout {
+export interface Workout {
   name: string;
   start: string;
   duration: number;
+  distance?: {
+    qty: number;
+    units: "km";
+  };
   activityEnergyBurned: {
     qty: number;
     units: "kJ"; // This is being incorrectly returned by Auto Export. Is actually kcal.
   };
 }
-
-export interface PoolWorkout extends BaseWorkout {
-  name: "Pool Swim";
-  distance: {
-    qty: number;
-    units: "km";
-  };
-}
-
-export type Workout = PoolWorkout | BaseWorkout;
 
 export function isMetricsData(
   data: MetricsData | WorkoutData
@@ -50,8 +45,4 @@ export function isWorkoutData(
   data: MetricsData | WorkoutData
 ): data is WorkoutData {
   return (data as WorkoutData).data.workouts !== undefined;
-}
-
-export function isPoolWorkout(workout: Workout): workout is PoolWorkout {
-  return workout.name === "Pool Swim";
 }
