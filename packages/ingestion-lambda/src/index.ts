@@ -3,10 +3,11 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
   Datum,
   MetricsData,
-  Workout,
+  BaseWorkout,
   WorkoutData,
   isMetricsData,
   isWorkoutData,
+  isPoolWorkout,
 } from "./SourceData";
 import {
   BatchWriteItemCommand,
@@ -86,11 +87,16 @@ async function handleMetricsData(data: MetricsData) {
 }
 
 async function handleWorkoutData(data: WorkoutData) {
-  const workoutData = data.data.workouts.map((workout) => ({
-    type: extractWorkoutType(workout),
-    start: extractStart(workout),
-    durationSeconds: extractDuration(workout),
-  }));
+  const workoutData = data.data.workouts.map((workout) => {
+    const type = extractWorkoutType(workout);
+    return {
+      type: extractWorkoutType(workout),
+      start: extractStart(workout),
+      durationSeconds: extractDuration(workout),
+      activeEnergyBurned: extractValue(workout.activityEnergyBurned),
+      ...extractAdditionalWorkoutData(workout),
+    };
+  });
   await writeWorkouts(workoutData);
 
   return {
@@ -198,11 +204,11 @@ function extractDate(datum: Datum) {
   return datum.date.slice(0, 10);
 }
 
-function extractWorkoutType(workout: Workout) {
+function extractWorkoutType(workout: BaseWorkout) {
   return workout.name.toLowerCase().replace(" ", "_");
 }
 
-function extractStart(workout: Workout) {
+function extractStart(workout: BaseWorkout) {
   return parse(
     workout.start,
     "yyyy-MM-dd HH:mm:ss XX",
@@ -210,13 +216,22 @@ function extractStart(workout: Workout) {
   ).toISOString();
 }
 
-function extractDuration(workout: Workout) {
+function extractDuration(workout: BaseWorkout) {
   return Math.round(workout.duration);
 }
 
-function extractValue(datum: Datum, multiplier: number = 1) {
+function extractValue(datum: { qty?: number }, multiplier: number = 1) {
   if (!datum.qty) {
     return 0;
   }
   return Math.round((datum.qty + Number.EPSILON) * multiplier);
+}
+
+function extractAdditionalWorkoutData(workout: BaseWorkout) {
+  if (isPoolWorkout(workout)) {
+    return {
+      distance: extractValue(workout.distance, KM_TO_M),
+    };
+  }
+  return {};
 }
