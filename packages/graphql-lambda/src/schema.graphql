@@ -43,6 +43,7 @@ type WorkoutMonth {
   durationSeconds: Int!
   activeEnergyBurned: Int!
   distance: Distance
+  speed: Speed
   workouts: [Workout!]!
 }
 
