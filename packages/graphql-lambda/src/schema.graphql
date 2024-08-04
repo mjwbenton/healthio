@@ -19,6 +19,7 @@ type Activity {
 
 type WorkoutTotal {
   type: ID!
+  count: Int!
   durationSeconds: Int!
   activeEnergyBurned: Int!
   distance: Distance
@@ -38,6 +39,7 @@ type Workout {
 type WorkoutMonth {
   year: Int!
   month: Int!
+  count: Int!
   durationSeconds: Int!
   activeEnergyBurned: Int!
   distance: Distance

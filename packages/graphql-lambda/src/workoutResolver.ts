@@ -22,6 +22,7 @@ export default async function workoutResolver(
 
   return {
     type,
+    count: workouts.length,
     ...transformNumbers(aggregateWorkouts(workouts)),
     workouts: workouts.map(transformWorkout),
     months: generateMonthsBetween(startDate, endDate).map((date) => {
@@ -33,6 +34,7 @@ export default async function workoutResolver(
         );
       });
       return {
+        count: monthWorkouts.length,
         year: getYear(date),
         month: date.getMonth() + 1,
         workouts: monthWorkouts.map(transformWorkout),

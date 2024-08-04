@@ -31,7 +31,7 @@ export type Scalars = {
 export type Activity = {
   swimmingDistance: DistanceTotal;
   walkingRunningDistance: DistanceTotal;
-  workouts: WorkoutTotal;
+  workouts?: Maybe<WorkoutTotal>;
 };
 
 export type ActivityWorkoutsArgs = {
@@ -72,15 +72,22 @@ export type QueryActivityArgs = {
   startDate: Scalars["Date"];
 };
 
+export type Speed = {
+  mps: Scalars["Float"];
+  spm: Scalars["Float"];
+};
+
 export type Workout = {
   activeEnergyBurned: Scalars["Int"];
   distance?: Maybe<Distance>;
   durationSeconds: Scalars["Int"];
+  speed?: Maybe<Speed>;
   startTime: Scalars["DateTime"];
 };
 
 export type WorkoutMonth = {
   activeEnergyBurned: Scalars["Int"];
+  count: Scalars["Int"];
   distance?: Maybe<Distance>;
   durationSeconds: Scalars["Int"];
   month: Scalars["Int"];
@@ -90,9 +97,11 @@ export type WorkoutMonth = {
 
 export type WorkoutTotal = {
   activeEnergyBurned: Scalars["Int"];
+  count: Scalars["Int"];
   distance?: Maybe<Distance>;
   durationSeconds: Scalars["Int"];
   months: Array<WorkoutMonth>;
+  speed?: Maybe<Speed>;
   type: Scalars["ID"];
   workouts: Array<Workout>;
 };
@@ -219,6 +228,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
   Query: ResolverTypeWrapper<{}>;
+  Speed: ResolverTypeWrapper<Speed>;
   String: ResolverTypeWrapper<Scalars["String"]>;
   Workout: ResolverTypeWrapper<Workout>;
   WorkoutMonth: ResolverTypeWrapper<WorkoutMonth>;
@@ -239,6 +249,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars["ID"];
   Int: Scalars["Int"];
   Query: {};
+  Speed: Speed;
   String: Scalars["String"];
   Workout: Workout;
   WorkoutMonth: WorkoutMonth;
@@ -260,7 +271,7 @@ export type ActivityResolvers<
     ContextType
   >;
   workouts?: Resolver<
-    ResolversTypes["WorkoutTotal"],
+    Maybe<ResolversTypes["WorkoutTotal"]>,
     ParentType,
     ContextType,
     RequireFields<ActivityWorkoutsArgs, "type">
@@ -339,6 +350,15 @@ export type QueryResolvers<
   >;
 }>;
 
+export type SpeedResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Speed"] = ResolversParentTypes["Speed"]
+> = ResolversObject<{
+  mps?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  spm?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type WorkoutResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Workout"] = ResolversParentTypes["Workout"]
@@ -350,6 +370,7 @@ export type WorkoutResolvers<
     ContextType
   >;
   durationSeconds?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  speed?: Resolver<Maybe<ResolversTypes["Speed"]>, ParentType, ContextType>;
   startTime?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -359,6 +380,7 @@ export type WorkoutMonthResolvers<
   ParentType extends ResolversParentTypes["WorkoutMonth"] = ResolversParentTypes["WorkoutMonth"]
 > = ResolversObject<{
   activeEnergyBurned?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  count?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   distance?: Resolver<
     Maybe<ResolversTypes["Distance"]>,
     ParentType,
@@ -380,6 +402,7 @@ export type WorkoutTotalResolvers<
   ParentType extends ResolversParentTypes["WorkoutTotal"] = ResolversParentTypes["WorkoutTotal"]
 > = ResolversObject<{
   activeEnergyBurned?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  count?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   distance?: Resolver<
     Maybe<ResolversTypes["Distance"]>,
     ParentType,
@@ -391,6 +414,7 @@ export type WorkoutTotalResolvers<
     ParentType,
     ContextType
   >;
+  speed?: Resolver<Maybe<ResolversTypes["Speed"]>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   workouts?: Resolver<
     Array<ResolversTypes["Workout"]>,
@@ -409,6 +433,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DistanceMonth?: DistanceMonthResolvers<ContextType>;
   DistanceTotal?: DistanceTotalResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Speed?: SpeedResolvers<ContextType>;
   Workout?: WorkoutResolvers<ContextType>;
   WorkoutMonth?: WorkoutMonthResolvers<ContextType>;
   WorkoutTotal?: WorkoutTotalResolvers<ContextType>;
