@@ -75,7 +75,13 @@ function transformNumbers(workout: Omit<Workout, "startTime">) {
     durationSeconds: workout.durationSeconds,
     activeEnergyBurned: workout.activeEnergyBurned,
     ...(workout.distance
-      ? { distance: { m: workout.distance, km: workout.distance / 1000 } }
+      ? {
+          distance: { m: workout.distance, km: workout.distance / 1000 },
+          speed: {
+            mps: workout.distance / workout.durationSeconds,
+            spm: workout.durationSeconds / workout.distance,
+          },
+        }
       : {}),
   };
 }
