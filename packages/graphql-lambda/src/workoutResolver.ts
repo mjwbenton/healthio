@@ -3,6 +3,8 @@ import { Workout, getWorkoutData } from "./data";
 import { ActivityWorkoutsArgs, QueryActivityArgs } from "./generated/graphql";
 import { getForwardedArgs } from "./util";
 import { getYear } from "date-fns/esm";
+import { endOfDay } from "date-fns/esm";
+import { startOfDay } from "date-fns/esm";
 
 const VALID_WORKOUT_TYPES = [
   "pool_swim",
@@ -18,7 +20,11 @@ export default async function workoutResolver(
     return null;
   }
   const { startDate, endDate } = getForwardedArgs<QueryActivityArgs>(parent);
-  const workouts = await getWorkoutData(type, startDate, endDate);
+  const workouts = await getWorkoutData(
+    type,
+    startOfDay(startDate),
+    endOfDay(endDate)
+  );
 
   return {
     type,
