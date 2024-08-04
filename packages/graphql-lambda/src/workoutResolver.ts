@@ -78,8 +78,12 @@ function transformNumbers(workout: Omit<Workout, "startTime">) {
       ? {
           distance: { m: workout.distance, km: workout.distance / 1000 },
           speed: {
-            mps: workout.distance / workout.durationSeconds,
-            spm: workout.durationSeconds / workout.distance,
+            mps:
+              Math.round((workout.distance / workout.durationSeconds) * 100) /
+              100,
+            spm:
+              Math.round((workout.durationSeconds / workout.distance) * 100) /
+              100,
           },
         }
       : {}),
