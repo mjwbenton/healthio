@@ -205,10 +205,10 @@
   dependencies:
     node-fetch "^2.6.1"
 
-"@as-integrations/aws-lambda@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@as-integrations/aws-lambda/-/aws-lambda-1.1.0.tgz#6e552108c3d69facb7889e8bb00f8fe3aeaebd56"
-  integrity sha512-ITyDiAPK9OBnI4wChSePoJ2tp/peFvyhrBGY+lnwmJOIAUhA5Q31naQN0O8s5MrMPNwaU9rTQxRyHy18NONUBQ==
+"@as-integrations/aws-lambda@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@as-integrations/aws-lambda/-/aws-lambda-3.1.0.tgz#997c06e6797c17cdcaeb02fc16b2bcba8efb3a7b"
+  integrity sha512-V7H9ICXgt5KDKfEjYSRB59lEVfQqi7oSIZEeBGzPrmfhSPIHyFCNJyHi1hXdJmRb6GHpCNmtffmqRgsB0i9k3w==
   dependencies:
     "@types/aws-lambda" "^8.10.106"
 
