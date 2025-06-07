@@ -12,28 +12,36 @@ const VALID_WORKOUT_TYPES = [
   "outdoor_run",
 ];
 
+type TransformedWorkout = ReturnType<typeof transformWorkout>;
+
 export default async function workoutResolver(
   parent: unknown,
   { type }: ActivityWorkoutsArgs
 ) {
-  if (!VALID_WORKOUT_TYPES.includes(type)) {
+  const { startDate, endDate } = getForwardedArgs<QueryActivityArgs>(parent);
+
+  const typesToFetch = type ? [type] : VALID_WORKOUT_TYPES;
+  if (!typesToFetch.every((t) => VALID_WORKOUT_TYPES.includes(t))) {
     return null;
   }
-  const { startDate, endDate } = getForwardedArgs<QueryActivityArgs>(parent);
-  const workouts = await getWorkoutData(
-    type,
-    startOfDay(startDate),
-    endOfDay(endDate)
+
+  const allWorkoutsResults = await Promise.all(
+    typesToFetch.map((workoutType) =>
+      getWorkoutData(workoutType, startOfDay(startDate), endOfDay(endDate))
+    )
   );
+  const allWorkouts: TransformedWorkout[] = allWorkoutsResults
+    .flat()
+    .map(transformWorkout)
+    .sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
 
   return {
-    type,
-    count: workouts.length,
-    ...transformNumbers(aggregateWorkouts(workouts)),
-    workouts: workouts.map(transformWorkout),
+    count: allWorkouts.length,
+    ...aggregateWorkouts(allWorkouts),
+    workouts: allWorkouts,
     months: generateMonthsBetween(startDate, endDate).map((date) => {
-      const monthWorkouts = workouts.filter((workout) => {
-        const workoutDate = parseISO(workout.startTime);
+      const monthWorkouts = allWorkouts.filter((workout) => {
+        const workoutDate = workout.startTime;
         return (
           workoutDate.getFullYear() === date.getFullYear() &&
           workoutDate.getMonth() === date.getMonth()
@@ -43,8 +51,8 @@ export default async function workoutResolver(
         count: monthWorkouts.length,
         year: getYear(date),
         month: date.getMonth() + 1,
-        workouts: monthWorkouts.map(transformWorkout),
-        ...transformNumbers(aggregateWorkouts(monthWorkouts)),
+        workouts: monthWorkouts,
+        ...aggregateWorkouts(monthWorkouts),
       };
     }),
   };
@@ -60,13 +68,13 @@ function generateMonthsBetween(from: Date, to: Date) {
   return months;
 }
 
-function aggregateWorkouts(workouts: Array<Workout>) {
-  return workouts.reduce(
+function aggregateWorkouts(workouts: TransformedWorkout[]) {
+  const aggregated = workouts.reduce(
     (acc, cur) => {
       acc.durationSeconds += cur.durationSeconds;
       acc.activeEnergyBurned += cur.activeEnergyBurned;
       if (cur.distance) {
-        acc.distance = (acc.distance ?? 0) + cur.distance;
+        acc.distance = (acc.distance ?? 0) + cur.distance.m;
       }
       return acc;
     },
@@ -76,6 +84,7 @@ function aggregateWorkouts(workouts: Array<Workout>) {
       distance: undefined as number | undefined,
     }
   );
+  return transformNumbers(aggregated);
 }
 
 function transformNumbers(workout: Omit<Workout, "startTime">) {
