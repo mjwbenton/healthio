@@ -28,6 +28,7 @@ type WorkoutTotal {
 }
 
 type Workout {
+  type: ID!
   startTime: DateTime!
   durationSeconds: Int!
   activeEnergyBurned: Int!

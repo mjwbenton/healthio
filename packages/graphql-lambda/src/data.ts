@@ -51,6 +51,7 @@ export async function getMetricData(
 }
 
 export type Workout = {
+  type: string;
   startTime: string;
   durationSeconds: number;
   activeEnergyBurned: number;
@@ -83,6 +84,7 @@ export async function getWorkoutData(
   }
   return (
     results.Items?.map((val) => ({
+      type: val.type!.S!,
       startTime: val.start!.S!,
       durationSeconds: parseInt(val.durationSeconds?.N ?? "0"),
       activeEnergyBurned: parseInt(val.activeEnergyBurned?.N ?? "0"),

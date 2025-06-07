@@ -1,6 +1,10 @@
 import parseISO from "date-fns/parseISO";
 import { Workout, getWorkoutData } from "./data";
-import { ActivityWorkoutsArgs, QueryActivityArgs } from "./generated/graphql";
+import {
+  ActivityWorkoutsArgs,
+  QueryActivityArgs,
+  Workout as GraphQLWorkout,
+} from "./generated/graphql";
 import { getForwardedArgs } from "./util";
 import { getYear } from "date-fns/esm";
 import { endOfDay } from "date-fns/esm";
@@ -11,8 +15,6 @@ const VALID_WORKOUT_TYPES = [
   "functional_strength_training",
   "outdoor_run",
 ];
-
-type TransformedWorkout = ReturnType<typeof transformWorkout>;
 
 export default async function workoutResolver(
   parent: unknown,
@@ -30,7 +32,7 @@ export default async function workoutResolver(
       getWorkoutData(workoutType, startOfDay(startDate), endOfDay(endDate))
     )
   );
-  const allWorkouts: TransformedWorkout[] = allWorkoutsResults
+  const allWorkouts: GraphQLWorkout[] = allWorkoutsResults
     .flat()
     .map(transformWorkout)
     .sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
@@ -68,7 +70,7 @@ function generateMonthsBetween(from: Date, to: Date) {
   return months;
 }
 
-function aggregateWorkouts(workouts: TransformedWorkout[]) {
+function aggregateWorkouts(workouts: GraphQLWorkout[]) {
   const aggregated = workouts.reduce(
     (acc, cur) => {
       acc.durationSeconds += cur.durationSeconds;
@@ -87,7 +89,7 @@ function aggregateWorkouts(workouts: TransformedWorkout[]) {
   return transformNumbers(aggregated);
 }
 
-function transformNumbers(workout: Omit<Workout, "startTime">) {
+function transformNumbers(workout: Omit<Workout, "startTime" | "type">) {
   return {
     durationSeconds: workout.durationSeconds,
     activeEnergyBurned: workout.activeEnergyBurned,
@@ -107,8 +109,9 @@ function transformNumbers(workout: Omit<Workout, "startTime">) {
   };
 }
 
-function transformWorkout(workout: Workout) {
+function transformWorkout(workout: Workout): GraphQLWorkout {
   return {
+    type: workout.type,
     startTime: parseISO(workout.startTime),
     ...transformNumbers(workout),
   };
