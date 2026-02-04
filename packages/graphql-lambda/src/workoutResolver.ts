@@ -19,13 +19,21 @@ const VALID_WORKOUT_TYPES = [
 
 export default async function workoutResolver(
   parent: unknown,
-  { type }: ActivityWorkoutsArgs
+  { type, types }: ActivityWorkoutsArgs
 ) {
   const { startDate, endDate } = getForwardedArgs<QueryActivityArgs>(parent);
 
-  const typesToFetch = type ? [type] : VALID_WORKOUT_TYPES;
-  if (!typesToFetch.every((t) => VALID_WORKOUT_TYPES.includes(t))) {
-    return null;
+  if (type && types && types.length > 0) {
+    throw new Error("Cannot specify both 'type' and 'types' arguments");
+  }
+
+  let typesToFetch: string[];
+  if (types !== undefined && types !== null) {
+    typesToFetch = [...types];
+  } else if (type) {
+    typesToFetch = [type];
+  } else {
+    typesToFetch = VALID_WORKOUT_TYPES;
   }
 
   const allWorkoutsResults = await Promise.all(
