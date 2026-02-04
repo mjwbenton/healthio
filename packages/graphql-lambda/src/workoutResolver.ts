@@ -13,6 +13,7 @@ import { startOfDay } from "date-fns/esm";
 const VALID_WORKOUT_TYPES = [
   "pool_swim",
   "functional_strength_training",
+  "traditional_strength_training",
   "outdoor_run",
 ];
 
