@@ -5,7 +5,7 @@
     "build": {
       "dependsOn": ["^build"]
     },
-    "check": {
+    "lint": {
       "outputs": []
     },
     "fix": {

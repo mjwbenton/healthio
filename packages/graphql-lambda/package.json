@@ -10,7 +10,7 @@
     "build": "yarn codegen && ../../scripts/build.sh",
     "clean": "../../scripts/clean.sh",
     "fix": "../../scripts/fix.sh",
-    "check": "../../scripts/check.sh",
+    "lint": "../../scripts/lint.sh",
     "watch": "../../scripts/watch.sh",
     "codegen": "graphql-codegen --config codegen.yml"
   },

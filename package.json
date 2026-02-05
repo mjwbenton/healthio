@@ -13,7 +13,7 @@
   "scripts": {
     "build": "yarn turbo run build",
     "clean": "yarn turbo run clean && ./scripts/clean.sh",
-    "check": "yarn turbo run check",
+    "lint": "yarn turbo run lint",
     "fix": "yarn turbo run fix",
     "deploy": "yarn turbo run deploy"
   },
