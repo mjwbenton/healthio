@@ -12,7 +12,9 @@ export async function handleWorkoutData(data: WorkoutData) {
       type: extractWorkoutType(workout),
       start: extractStart(workout),
       durationSeconds: extractDuration(workout),
-      activeEnergyBurned: extractUnitsValue(workout.activeEnergyBurned, "kJ"), // This is being incorrectly returned by Auto Export. Is actually kcal.
+      activeEnergyBurned: workout.activeEnergyBurned
+        ? extractUnitsValue(workout.activeEnergyBurned, "kJ") // This is being incorrectly returned by Auto Export. Is actually kcal.
+        : 0,
       ...extractOptionalWorkoutData(workout),
     };
   });
