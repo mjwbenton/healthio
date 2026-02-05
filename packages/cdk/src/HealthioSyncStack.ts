@@ -42,7 +42,7 @@ export default class HealthioSyncStack extends Stack {
         },
       },
       timeout: Duration.minutes(1),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_22_X,
       memorySize: 1024,
       environment: {
         DATA_BUCKET: dataBucket.bucketName,

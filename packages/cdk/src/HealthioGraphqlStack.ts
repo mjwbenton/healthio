@@ -47,7 +47,7 @@ export default class HealthioGraphqlStack extends Stack {
         },
       },
       timeout: Duration.minutes(1),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_22_X,
       memorySize: 1024,
       environment: {
         DATA_TABLE: dataTable.tableName,
