@@ -3,7 +3,7 @@ import { CHUNK_SIZE, DYNAMO_CLIENT, WORKOUT_TABLE } from "./dynamo";
 import { BatchWriteItemCommand } from "@aws-sdk/client-dynamodb";
 import { Workout, WorkoutData } from "./SourceData";
 import { parse } from "date-fns/parse";
-import { KM_TO_M } from "./conversion";
+import { KJ_TO_KCAL, KM_TO_M } from "./conversion";
 
 export async function handleWorkoutData(data: WorkoutData) {
   const workoutData = data.data.workouts.map((workout) => {
@@ -12,9 +12,7 @@ export async function handleWorkoutData(data: WorkoutData) {
       type: extractWorkoutType(workout),
       start: extractStart(workout),
       durationSeconds: extractDuration(workout),
-      activeEnergyBurned: workout.activeEnergyBurned
-        ? extractUnitsValue(workout.activeEnergyBurned, "kJ") // This is being incorrectly returned by Auto Export. Is actually kcal.
-        : 0,
+      activeEnergyBurned: extractActiveEnergyBurned(workout),
       ...extractOptionalWorkoutData(workout),
     };
   });
@@ -78,12 +76,12 @@ function extractWorkoutType(workout: Workout) {
   return workout.name.toLowerCase().replaceAll(" ", "_");
 }
 
+function parseWorkoutStart(workout: Workout): Date {
+  return parse(workout.start, "yyyy-MM-dd HH:mm:ss XX", new Date());
+}
+
 function extractStart(workout: Workout) {
-  return parse(
-    workout.start,
-    "yyyy-MM-dd HH:mm:ss XX",
-    new Date()
-  ).toISOString();
+  return parseWorkoutStart(workout).toISOString();
 }
 
 function extractDuration(workout: Workout) {
@@ -123,4 +121,27 @@ function extractOptionalWorkoutData(workout: Workout) {
     };
   }
   return {};
+}
+
+// The date when Auto Export fixed the kJ/kcal bug
+const AUTO_EXPORT_KJ_BUG_FIX_DATE = new Date("2026-01-19T00:00:00Z");
+
+function extractActiveEnergyBurned(workout: Workout): number {
+  if (!workout.activeEnergyBurned?.qty) {
+    return 0;
+  }
+  if (workout.activeEnergyBurned.units !== "kJ") {
+    throw new Error("Expecting kJ units");
+  }
+
+  const startDate = parseWorkoutStart(workout);
+  const qty = workout.activeEnergyBurned.qty;
+
+  if (startDate >= AUTO_EXPORT_KJ_BUG_FIX_DATE) {
+    // After bug fix: kJ is actually kJ, convert to kcal
+    return Math.round(qty * KJ_TO_KCAL + Number.EPSILON);
+  } else {
+    // Before bug fix: kJ was actually kcal, use as-is
+    return Math.round(qty + Number.EPSILON);
+  }
 }
