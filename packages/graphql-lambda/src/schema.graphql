@@ -24,6 +24,7 @@ type WorkoutTotal {
   distance: Distance
   speed: Speed
   workouts: [Workout!]!
+  days: [WorkoutDay!]!
   months: [WorkoutMonth!]!
 }
 
@@ -34,6 +35,16 @@ type Workout {
   activeEnergyBurned: Int!
   distance: Distance
   speed: Speed
+}
+
+type WorkoutDay {
+  date: Date!
+  count: Int!
+  durationSeconds: Int!
+  activeEnergyBurned: Int!
+  distance: Distance
+  speed: Speed
+  workouts: [Workout!]!
 }
 
 type WorkoutMonth {

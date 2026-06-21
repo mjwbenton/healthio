@@ -50,6 +50,22 @@ export default async function workoutResolver(
     count: allWorkouts.length,
     ...aggregateWorkouts(allWorkouts),
     workouts: allWorkouts,
+    days: generateDaysBetween(startDate, endDate).map((date) => {
+      const dayWorkouts = allWorkouts.filter((workout) => {
+        const workoutDate = workout.startTime;
+        return (
+          workoutDate.getFullYear() === date.getFullYear() &&
+          workoutDate.getMonth() === date.getMonth() &&
+          workoutDate.getDate() === date.getDate()
+        );
+      });
+      return {
+        date,
+        count: dayWorkouts.length,
+        workouts: dayWorkouts,
+        ...aggregateWorkouts(dayWorkouts),
+      };
+    }),
     months: generateMonthsBetween(startDate, endDate).map((date) => {
       const monthWorkouts = allWorkouts.filter((workout) => {
         const workoutDate = workout.startTime;
@@ -67,6 +83,20 @@ export default async function workoutResolver(
       };
     }),
   };
+}
+
+function generateDaysBetween(from: Date, to: Date) {
+  const days = [];
+  let current = startOfDay(from);
+  while (current <= to) {
+    days.push(current);
+    current = new Date(
+      current.getFullYear(),
+      current.getMonth(),
+      current.getDate() + 1
+    );
+  }
+  return days;
 }
 
 function generateMonthsBetween(from: Date, to: Date) {
